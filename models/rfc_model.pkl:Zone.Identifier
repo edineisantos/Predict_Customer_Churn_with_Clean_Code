@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://xpxs6lcmoq.prod.udacity-student-workspaces.com/lab?ulab=%7B%22disk%22%3A%20null%2C%20%22port%22%3A%203000%2C%20%22ports%22%3A%20%5B%5D%2C%20%22videos%22%3A%20%5B%5D%2C%20%22pageEnd%22%3A%20%221%22%2C%20%22pageStart%22%3A%20%221%22%2C%20%22allowSubmit%22%3A%20true%2C%20%22defaultPath%22%3A%20%22/%22%2C%20%22actionButtonText%22%3A%20%22%22%7D
+HostUrl=https://xpxs6lcmoq.prod.udacity-student-workspaces.com/files/models/rfc_model.pkl?_xsrf=2%7C45f1e9f2%7C6e84c844d80f143ac8375a062d9b27fb%7C1693577921

@@ -5,8 +5,6 @@
 import os
 os.environ['QT_QPA_PLATFORM']='offscreen'
 
-
-
 def import_data(pth):
     '''
     returns dataframe for the csv found at pth
@@ -16,7 +14,7 @@ def import_data(pth):
     output:
             df: pandas dataframe
     '''	
-	pass
+    pass
 
 
 def perform_eda(df):
@@ -28,7 +26,7 @@ def perform_eda(df):
     output:
             None
     '''
-	pass
+pass
 
 
 def encoder_helper(df, category_lst, response):
@@ -44,7 +42,7 @@ def encoder_helper(df, category_lst, response):
     output:
             df: pandas dataframe with new columns for
     '''
-    pass
+pass
 
 
 def perform_feature_engineering(df, response):
@@ -108,3 +106,11 @@ def train_models(X_train, X_test, y_train, y_test):
               None
     '''
     pass
+
+def main():
+    # Print function to test
+    print("Hello world!")
+
+# This checks if churn_library.py is being run as the main program
+if __name__ == '__main__':
+    main()

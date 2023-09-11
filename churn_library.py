@@ -19,7 +19,10 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from constants import file_path, eda_images_path
+from constants import (
+    file_path, eda_images_path,
+    category_list_constant, response_constant
+)
 sns.set()
 
 # Set the QT_QPA_PLATFORM as offscreen
@@ -89,6 +92,30 @@ def perform_eda(dataframe):
     plt.close()
 
 
+def encoder_helper(dataframe, category_list, response=response_constant):
+    '''
+    Helper function to turn each categorical column into a new column with
+    proportion of churn for each category
+
+    input:
+        dataframe: pandas DataFrame
+        category_list: list of columns that contain categorical features
+        response: string of response name [optional argument that could
+        be used for naming variables or index y column]
+
+    output:
+        DataFrame with new columns
+    '''
+    for category in category_list:
+        category_groups = dataframe.groupby(category).mean()[response]
+        new_column_name = f"{category}_{response}"
+
+        dataframe[new_column_name] = dataframe[category].apply(
+            lambda val, category_groups=category_groups: category_groups.loc[val])
+
+    return dataframe
+
+
 def main():
     """
     Run all the data science processes.
@@ -104,10 +131,16 @@ def main():
     churn_df = import_data(file_path)
     print("Dataframe shape:")
     print(churn_df.shape)
+    print(type(churn_df))
 
-    # Perfomr EDA
+    # Perform EDA
     print("Performing EDA...")
     perform_eda(churn_df)
+
+    # Test encoder_helper
+    encoded_df = encoder_helper(churn_df, category_list_constant)
+    print(type(encoded_df))
+    print(encoded_df.columns)
 
     # Print
     print("Process completed!")

@@ -19,9 +19,12 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+#from sklearn.preprocessing import normalize
+from sklearn.model_selection import train_test_split
 from constants import (
     file_path, eda_images_path,
-    category_list_constant, response_constant
+    category_list_constant, response_constant,
+    keep_cols
 )
 sns.set()
 
@@ -116,6 +119,32 @@ def encoder_helper(dataframe, category_list, response=response_constant):
     return dataframe
 
 
+def perform_feature_engineering(dataframe, response=response_constant):
+    '''
+    input:
+              df: pandas dataframe
+              response: string of response name [optional argument
+              that could be used for naming variables or index y column]
+
+    output:
+              X_train: X training data
+              X_test: X testing data
+              y_train: y training data
+              y_test: y testing data
+    '''
+    target = dataframe['Churn']
+    features = pd.DataFrame()
+    dataframe = encoder_helper(
+        dataframe,
+        category_list_constant,
+        response=response)
+    features[keep_cols] = dataframe[keep_cols]
+    features_train, features_test, target_train, target_test = train_test_split(
+        features, target, test_size=0.3, random_state=42)
+
+    return features_train, features_test, target_train, target_test
+
+
 def main():
     """
     Run all the data science processes.
@@ -137,12 +166,17 @@ def main():
     print("Performing EDA...")
     perform_eda(churn_df)
 
-    # Test encoder_helper
-    encoded_df = encoder_helper(churn_df, category_list_constant)
-    print(type(encoded_df))
-    print(encoded_df.columns)
+    # Perform Feature Engineering
+    print("Performing Feature Engineering...")
+    features_train, features_test, target_train, target_test = perform_feature_engineering(
+        churn_df)
+    print("Shape of dataframes for training:")
+    print(features_train.shape)
+    print(features_test.shape)
+    print(target_train.shape)
+    print(target_test.shape)
 
-    # Print
+    # End of process
     print("Process completed!")
 
 

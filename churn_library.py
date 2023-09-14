@@ -438,7 +438,7 @@ def main():
     # Perform Feature Engineering
     print("Performing Feature Engineering...")
     features_train, features_test, target_train, target_test = perform_feature_engineering(
-        churn_df)
+        eda_df)
     print("Shape of dataframes for training:")
     print(features_train.shape)
     print(features_test.shape)

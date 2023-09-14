@@ -17,13 +17,13 @@ Author: Edinei Santos
 Date: 2023-09
 
 """
-
+import os
 import logging
 import churn_library as cl
 
 # import constants
 from constants import (
-    file_path
+    file_path, eda_images_path
 )
 
 logging.basicConfig(
@@ -35,7 +35,7 @@ logging.basicConfig(
 
 def test_import(import_data):
     '''
-    test data import - this example is completed for you to assist with the other test functions
+    test data import
     '''
     try:
         dataframe = import_data(file_path)
@@ -53,6 +53,37 @@ def test_import(import_data):
         raise err
 
 
+def test_eda(perform_eda, dataframe):
+    '''
+    test perform_eda function
+    '''
+    # Run the function
+    eda_df = perform_eda(dataframe)
+
+    # Test if new column 'Churn' is created in dataframe
+    try:
+        assert 'Churn' in eda_df.columns
+        logging.info("Testing perform_eda: Churn column creation SUCCESS")
+    except AssertionError as err:
+        logging.error("Testing perform_eda: Churn column was not created")
+        raise err
+
+    # Check if plots are saved to the images folder
+    eda_plots = ['churn_distribution.png', 'customer_age_distribution.png',
+                 'heatmap.png', 'marital_status_distribution.png',
+                 'total_transaction_distribution.png']
+
+    for plot_name in eda_plots:
+        plot_path = os.path.join(eda_images_path, plot_name)
+        try:
+            assert os.path.isfile(plot_path)
+            logging.info("Testing perform_eda: %s plot SUCCESS", plot_name)
+        except AssertionError as err:
+            logging.error(
+                "Testing perform_eda: %s plot was not created", plot_name)
+            raise err
+
+
 def main():
     """
     Run the tests for all functions.
@@ -65,6 +96,10 @@ def main():
     """
     print("Testing import_data...")
     test_import(cl.import_data)
+
+    print("Testing perform_eda...")
+    churn_df = cl.import_data(file_path)
+    test_eda(cl.perform_eda, churn_df)
 
 
 if __name__ == "__main__":

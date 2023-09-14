@@ -1,1 +1,7 @@
 root - INFO - Testing import_data: SUCCESS
+root - INFO - Testing perform_eda: Churn column creation SUCCESS
+root - INFO - Testing perform_eda: churn_distribution.png plot SUCCESS
+root - INFO - Testing perform_eda: customer_age_distribution.png plot SUCCESS
+root - INFO - Testing perform_eda: heatmap.png plot SUCCESS
+root - INFO - Testing perform_eda: marital_status_distribution.png plot SUCCESS
+root - INFO - Testing perform_eda: total_transaction_distribution.png plot SUCCESS

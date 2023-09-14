@@ -108,6 +108,8 @@ def perform_eda(dataframe):
     plt.savefig(f"{eda_images_path}total_transaction_distribution.png")
     plt.close()
 
+    return dataframe
+
 
 def encoder_helper(dataframe, category_list, response=response_constant):
     '''
@@ -430,7 +432,8 @@ def main():
 
     # Perform EDA
     print("Performing EDA...")
-    perform_eda(churn_df)
+    eda_df = perform_eda(churn_df)
+    print(type(eda_df))
 
     # Perform Feature Engineering
     print("Performing Feature Engineering...")

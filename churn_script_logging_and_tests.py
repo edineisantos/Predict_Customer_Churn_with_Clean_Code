@@ -24,7 +24,7 @@ import churn_library as cl
 # import constants
 from constants import (
     file_path, eda_images_path, category_list_constant,
-    response_constant
+    response_constant, results_images_path
 )
 
 logging.basicConfig(
@@ -114,6 +114,7 @@ def test_encoder_helper(encoder_helper, dataframe):
         logging.error("Testing encoder_helper: %s", err)
         raise err
 
+
 def test_perform_feature_engineering(perform_feature_engineering, dataframe):
     '''
     Test perform_feature_engineering function
@@ -147,6 +148,50 @@ def test_perform_feature_engineering(perform_feature_engineering, dataframe):
         raise err
 
 
+def test_train_models(
+        train_models,
+        features_train,
+        features_test,
+        target_train,
+        target_test):
+    '''
+    Test train_models function
+
+    input:
+        train_models: function to test
+        features_train: features training data
+        features_test: features testing data
+        target_train: target training data
+        target_test: target testing data
+
+    output:
+        None
+    '''
+    try:
+        # Train models and get predictions
+        cv_rfc, target_data = train_models(
+            features_train, features_test, target_train, target_test)
+
+        # Check that the trained models are not None
+        assert cv_rfc is not None
+
+        # Check length of target_data list
+        assert len(target_data) == 6
+
+        # Check if the ROC Curve image is generated
+        assert os.path.isfile(f"{results_images_path}roc_curve_result.png")
+
+        # Check if model files were saved
+        assert os.path.isfile('./models/rfc_model.pkl')
+        assert os.path.isfile('./models/logistic_model.pkl')
+
+        logging.info("Testing train_models: SUCCESS")
+
+    except Exception as err:
+        logging.error("Testing train_models: %s", err)
+        raise err
+
+
 def main():
     """
     Run the tests for all functions.
@@ -170,6 +215,16 @@ def main():
     print("Testing perform_feature_engineering...")
     eda_df = cl.perform_eda(churn_df)
     test_perform_feature_engineering(cl.perform_feature_engineering, eda_df)
+
+    print("Testing train_models...")
+    features_train, features_test, target_train, target_test = cl.perform_feature_engineering(
+        eda_df)
+    test_train_models(
+        cl.train_models,
+        features_train,
+        features_test,
+        target_train,
+        target_test)
 
 
 if __name__ == "__main__":

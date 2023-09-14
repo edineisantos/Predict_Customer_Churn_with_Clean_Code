@@ -23,7 +23,8 @@ import churn_library as cl
 
 # import constants
 from constants import (
-    file_path, eda_images_path
+    file_path, eda_images_path, category_list_constant,
+    response_constant
 )
 
 logging.basicConfig(
@@ -84,6 +85,36 @@ def test_eda(perform_eda, dataframe):
             raise err
 
 
+def test_encoder_helper(encoder_helper, dataframe):
+    '''
+    Test the encoder_helper function
+
+    input:
+            encoder_function: function to be tested
+            dataframe: pandas DataFrame to test
+
+    output:
+            None
+    '''
+    try:
+        # Apply the encoder_helper function
+        encoded_df = encoder_helper(dataframe, category_list_constant,
+                                    response=response_constant)
+
+        # Check that the DataFrame returned is not None
+        assert encoded_df is not None
+
+        # Check that new columns were created
+        for col in category_list_constant:
+            assert f"{col}_{response_constant}" in encoded_df.columns
+
+        logging.info("Testing encoder_helper: SUCCESS")
+
+    except Exception as err:
+        logging.error("Testing encoder_helper: %s", err)
+        raise err
+
+
 def main():
     """
     Run the tests for all functions.
@@ -100,6 +131,9 @@ def main():
     print("Testing perform_eda...")
     churn_df = cl.import_data(file_path)
     test_eda(cl.perform_eda, churn_df)
+
+    print("Testing encoder_helper...")
+    test_encoder_helper(cl.encoder_helper, churn_df)
 
 
 if __name__ == "__main__":

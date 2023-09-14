@@ -6,3 +6,4 @@ root - INFO - Testing perform_eda: heatmap.png plot SUCCESS
 root - INFO - Testing perform_eda: marital_status_distribution.png plot SUCCESS
 root - INFO - Testing perform_eda: total_transaction_distribution.png plot SUCCESS
 root - INFO - Testing encoder_helper: SUCCESS
+root - INFO - Testing perform_feature_engineering: SUCCESS

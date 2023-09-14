@@ -114,6 +114,38 @@ def test_encoder_helper(encoder_helper, dataframe):
         logging.error("Testing encoder_helper: %s", err)
         raise err
 
+def test_perform_feature_engineering(perform_feature_engineering, dataframe):
+    '''
+    Test perform_feature_engineering function
+
+    input:
+        perform_feature_engineering: function to test
+        dataframe: pandas DataFrame to test
+
+    output:
+        None
+    '''
+    try:
+        # Apply the function
+        features_train, features_test, target_train, target_test = \
+            perform_feature_engineering(dataframe, response=response_constant)
+
+        # Check that none of the splits are None
+        assert features_train is not None
+        assert features_test is not None
+        assert target_train is not None
+        assert target_test is not None
+
+        # Check shapes of the splits
+        assert features_train.shape[0] == target_train.shape[0]
+        assert features_test.shape[0] == target_test.shape[0]
+
+        logging.info("Testing perform_feature_engineering: SUCCESS")
+
+    except Exception as err:
+        logging.error("Testing perform_feature_engineering: %s", err)
+        raise err
+
 
 def main():
     """
@@ -134,6 +166,10 @@ def main():
 
     print("Testing encoder_helper...")
     test_encoder_helper(cl.encoder_helper, churn_df)
+
+    print("Testing perform_feature_engineering...")
+    eda_df = cl.perform_eda(churn_df)
+    test_perform_feature_engineering(cl.perform_feature_engineering, eda_df)
 
 
 if __name__ == "__main__":

@@ -221,8 +221,7 @@ def train_models(features_train, features_test, target_train, target_test):
     # Add title to the plot
     plt.title("ROC Curve")
     # Save the plot
-    save_path = f"{results_images_path}roc_curve_result.png"
-    plt.savefig(save_path)
+    plt.savefig(f"{results_images_path}roc_curve_result.png")
 
     # Close the plot
     plt.close(fig)
@@ -233,106 +232,115 @@ def train_models(features_train, features_test, target_train, target_test):
     joblib.dump(cv_rfc.best_estimator_, './models/rfc_model.pkl')
     joblib.dump(lrc, './models/logistic_model.pkl')
 
-    # logistic_results.png and rf_results.png
-    classification_report_image(target_train,
-                                target_test,
-                                target_train_preds_lr,
-                                target_train_preds_rf,
-                                target_test_preds_lr,
-                                target_test_preds_rf)
-
-    # feature_importances.png on cv_rfc
-    feature_importance_plot(cv_rfc, features_test, results_images_path)
+    # Save the target data in a list
+    target_data = [
+        target_train,
+        target_test,
+        target_train_preds_lr,
+        target_train_preds_rf,
+        target_test_preds_lr,
+        target_test_preds_rf]
 
     print("Train models process completed!")
 
-# results images
+    return cv_rfc, target_data
 
 
-def classification_report_image(target_train,
-                                target_test,
-                                target_train_preds_lr,
-                                target_train_preds_rf,
-                                target_test_preds_lr,
-                                target_test_preds_rf):
+def classification_report_image(target_data):
     '''
-    produces classification report for training and testing results and stores report as image
-    in images folder
+    Produces classification report for training and testing results and stores
+    the report as an image in the images folder.
+
     input:
-            target_train: training response values
-            target_test:  test response values
-            target_train_preds_lr: training predictions from logistic regression
-            target_train_preds_rf: training predictions from random forest
-            target_test_preds_lr: test predictions from logistic regression
-            target_test_preds_rf: test predictions from random forest
+            target_data: A list or tuple containing six elements:
+                - target_train: training response values
+                - target_test: test response values
+                - target_train_preds_lr: training predictions from logistic regression
+                - target_train_preds_rf: training predictions from random forest
+                - target_test_preds_lr: test predictions from logistic regression
+                - target_test_preds_rf: test predictions from random forest
 
     output:
              None
     '''
 
+    # Split up the target_data in new variables
+    (
+        target_train, target_test, target_train_preds_lr,
+        target_train_preds_rf, target_test_preds_lr, target_test_preds_rf
+    ) = target_data
+
     # logistic_results.png
     print("Saving logistic_results.png...")
-    plt.rc('figure', figsize=(10, 8))
+    plt.figure(figsize=(15, 8))  # Create a new figure
+
     plt.text(
-        0.01, 1.25,
+        0.01, 1.0,
         'Logistic Regression Train',
         {'fontsize': 10},
         fontproperties='monospace'
     )
+
     plt.text(
-        0.01, 0.05,
+        0.01, 0.7,
         str(classification_report(target_train, target_train_preds_lr)),
         {'fontsize': 10},
         fontproperties='monospace'
     )
+
     plt.text(
-        0.01, 0.6,
+        0.01, 0.4,
         'Logistic Regression Test',
         {'fontsize': 10},
         fontproperties='monospace'
     )
+
     plt.text(
-        0.01, 0.7,
+        0.01, 0.1,
         str(classification_report(target_test, target_test_preds_lr)),
         {'fontsize': 10},
         fontproperties='monospace'
     )
-    plt.axis('off')
 
-    # Save the figure
+    plt.axis('off')
     plt.savefig(f"{results_images_path}/logistic_results.png")
+    plt.close()  # Close the figure to free up the resources
 
     # rf_results.png
     print("Saving rf_results.png...")
-    plt.rc('figure', figsize=(10, 8))
+    plt.figure(figsize=(15, 8))  # Create a new figure
+
     plt.text(
-        0.01, 1.25,
+        0.01, 1.0,
         'Random Forest Train',
         {'fontsize': 10},
         fontproperties='monospace'
     )
+
     plt.text(
-        0.01, 0.05,
+        0.01, 0.7,
         str(classification_report(target_test, target_test_preds_rf)),
         {'fontsize': 10},
         fontproperties='monospace'
     )
+
     plt.text(
-        0.01, 0.6,
+        0.01, 0.4,
         'Random Forest Test',
         {'fontsize': 10},
         fontproperties='monospace'
     )
+
     plt.text(
-        0.01, 0.7,
+        0.01, 0.1,
         str(classification_report(target_train, target_train_preds_rf)),
         {'fontsize': 10},
         fontproperties='monospace'
     )
-    plt.axis('off')
 
-    # Save the figure
+    plt.axis('off')
     plt.savefig(f"{results_images_path}/rf_results.png")
+    plt.close()  # Close the figure to free up the resources
 
 
 def feature_importance_plot(model, feature_data, output_path):
@@ -350,6 +358,8 @@ def feature_importance_plot(model, feature_data, output_path):
     # Create a figure to hold the SHAP plot
     explainer = shap.TreeExplainer(model.best_estimator_)
     shap_values = explainer.shap_values(feature_data)
+
+    # Plot SHAP summary
     plt.figure(figsize=(20, 5))
     shap.summary_plot(shap_values, feature_data, plot_type="bar",
                       show=False, plot_size=(20, 5))
@@ -361,45 +371,33 @@ def feature_importance_plot(model, feature_data, output_path):
     importances = model.best_estimator_.feature_importances_
     indices = np.argsort(importances)[::-1]
     names = [feature_data.columns[i] for i in indices]
+
+    # Plot Feature Importance
     plt.figure(figsize=(20, 5))
     plt.bar(range(feature_data.shape[1]), importances[indices])
-    # Reduce font size for x-axis labels
     plt.xticks(range(feature_data.shape[1]), names, rotation=90, fontsize=8)
-    # Increase the viewing area below the graph
     plt.subplots_adjust(bottom=0.3)
-    # Add a title and ylabel
     plt.title("Feature Importance")
     plt.ylabel('Importance')
     feature_importance_plot_path = os.path.join(
         output_path, "feature_importance_plot.png")
     plt.savefig(feature_importance_plot_path)
-
-    # Automatically adjust spacing between subplots
     plt.tight_layout()
-
     plt.close()
 
     # Open the images
     img1 = Image.open(shap_plot_path)
     img2 = Image.open(feature_importance_plot_path)
 
-    # Get dimensions
-    img1_width, img1_height = img1.size
-    img2_width, img2_height = img2.size
-
     # Create a new image with white background
     new_img = Image.new(
         "RGB",
-        (max(
-            img1_width,
-            img2_width),
-            img1_height +
-            img2_height),
+        (max(img1.size[0], img2.size[0]), img1.size[1] + img2.size[1]),
         "white")
 
     # Paste the images
     new_img.paste(img1, (0, 0))
-    new_img.paste(img2, (0, img1_height))
+    new_img.paste(img2, (0, img1.size[1]))
 
     # Save the new image
     new_img.save(os.path.join(output_path, "feature_importances.png"))
@@ -445,7 +443,14 @@ def main():
     print(target_test.shape)
 
     # Train models
-    train_models(features_train, features_test, target_train, target_test)
+    cv_rfc, target_data = train_models(
+        features_train, features_test, target_train, target_test)
+
+    # Classification report
+    classification_report_image(target_data)
+
+    # Feature importante
+    feature_importance_plot(cv_rfc, features_test, results_images_path)
 
     # End of process
     print("Process completed!")

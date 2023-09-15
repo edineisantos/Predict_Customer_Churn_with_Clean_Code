@@ -12,7 +12,7 @@ required for customer churn prediction.
 Dataset: The data used in this project is sourced from Kaggle.
 
 Author: Edinei Santos
-Date: 2023-09
+Date: 2023-09-14
 """
 
 #import libraries

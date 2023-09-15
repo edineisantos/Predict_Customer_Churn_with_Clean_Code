@@ -14,7 +14,7 @@ Note: Before running this script, ensure that you have the `churn_library` and
 required constants imported.
 
 Author: Edinei Santos
-Date: 2023-09
+Date: 2023-09-14
 
 """
 import os

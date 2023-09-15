@@ -19,6 +19,7 @@ Date: 2023-09
 """
 import os
 import logging
+from PIL import Image
 import churn_library as cl
 
 # import constants
@@ -187,8 +188,77 @@ def test_train_models(
 
         logging.info("Testing train_models: SUCCESS")
 
+        return cv_rfc, target_data
+
     except Exception as err:
         logging.error("Testing train_models: %s", err)
+        raise err
+
+
+def test_classification_report_image(classification_report_image, target_data):
+    '''
+    Test classification_report_image function
+
+    input:
+        classification_report_image: function to test
+        target_data: list or tuple of target data for testing and training
+
+    output:
+        None
+    '''
+    try:
+        # Run classification_report_image
+        classification_report_image(target_data)
+
+        # Check if Logistic Regression results image was generated
+        assert os.path.isfile(f"{results_images_path}/logistic_results.png")
+
+        # Check if Random Forest results image was generated
+        assert os.path.isfile(f"{results_images_path}/rf_results.png")
+
+        logging.info("Testing classification_report_image: SUCCESS")
+
+    except Exception as err:
+        logging.error("Testing classification_report_image: %s", err)
+        raise err
+
+
+def test_feature_importance_plot(
+        feature_importance_plot,
+        model,
+        feature_data,
+        output_path):
+    '''
+    Test the feature_importance_plot function
+
+    input:
+        feature_importance_plot: function to be tested
+        model: a trained model object containing feature_importances_
+        feature_data: pandas DataFrame of X values for features
+        output_path: path to store the generated images
+
+    output:
+        None
+    '''
+    try:
+        # Run the feature_importance_plot function
+        feature_importance_plot(model, feature_data, output_path)
+
+        # Verify if the combined feature importances image is created
+        assert os.path.isfile(
+            os.path.join(
+                output_path,
+                "feature_importances.png"))
+
+        # Open the combined image to check its dimensions
+        with Image.open(os.path.join(output_path, "feature_importances.png")) as img:
+            width, height = img.size
+            assert width > 0 and height > 0
+
+        logging.info("Testing feature_importance_plot: SUCCESS")
+
+    except Exception as err:
+        logging.error("Testing feature_importance_plot: %s", err)
         raise err
 
 
@@ -219,12 +289,19 @@ def main():
     print("Testing train_models...")
     features_train, features_test, target_train, target_test = cl.perform_feature_engineering(
         eda_df)
-    test_train_models(
+    cv_rfc, target_data = test_train_models(
         cl.train_models,
         features_train,
         features_test,
         target_train,
         target_test)
+
+    print("Testing classification_report_image...")
+    test_classification_report_image(cl.classification_report_image, target_data)
+
+    print("Testing feature_importance_plot...")
+    test_feature_importance_plot(cl.feature_importance_plot, cv_rfc,
+                                 features_test, results_images_path)
 
 
 if __name__ == "__main__":
